@@ -21,19 +21,21 @@ namespace autograd {
      * Value is a custom data type that maintains computation graphs in order
      * to iteratively apply chain rule during back prop.
      */
-    class Value {
-        public:
-            Value(double data) : data(data) {}
-            Value operator+(const Value& rhs) const;
-            Value operator+(const double& rhs) const;
+    struct Value {
+        Value(double data) : data(data) {}
+        Value operator+(Value& rhs);
+        Value operator+(double& rhs);
 
-        public: // fields
-            double data = 0;
-        private:
-            double grad_ = 0; // needs default
-            std::function<void()> backward_;
-            std::set<Value> parents_;
+        Value operator*(Value& rhs);
+        Value operator*(double& rhs);
+
+        double data = 0;
+        double grad = 0; // needs default
+        std::function<void()> backward;
+        std::set<Value*> parents;
+        Ops res_op;
     };
 
-    Value operator+(const double& lhs, const Value& rhs);
+    Value operator+(double& lhs, Value& rhs);
+    Value operator*(double& lhs, Value& rhs);
 };
